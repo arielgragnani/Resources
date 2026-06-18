@@ -469,8 +469,8 @@
         {
           "amount": "55 (covers 2 x lessons)",
           "paidDate": "11 June 2026",
-          "status": "scheduled",
-          "detail": "Lesson 3 — scheduled 16 June"
+          "status": "completed",
+          "detail": "Lesson 3 — taken 16 June, completed"
         }
       ],
       "goals": [
@@ -520,5 +520,5 @@
     "sort": "added",
     "showLinks": false
   },
-  "_version": "2026-06-17-2"
+  "_version": "2026-06-18-1"
 }
