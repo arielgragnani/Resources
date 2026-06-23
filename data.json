@@ -504,6 +504,17 @@
               "url": "https://drive.google.com/file/d/1-NKBRsq7uitEXaIbmGdyEkwqLxj2ONCv/view?usp=sharing"
             }
           ]
+        },
+        {
+          "id": 3,
+          "cat": "Backing Tracks",
+          "title": "Bossa Nova Drum Groove",
+          "links": [
+            {
+              "type": "bt",
+              "url": "https://drive.google.com/file/d/17CrVSYhmQWZJlaWVNQYsxHDsqIe3o9WC/view?usp=sharing"
+            }
+          ]
         }
       ],
       "payments": [],
@@ -512,7 +523,34 @@
         "accountNumber": "28038103",
         "sortCode": "23-08-01",
         "bankName": "Wise Payments Limited"
-      }
+      },
+      "lessons": [
+        {
+          "date": "23 June 2026",
+          "topics": [
+            {
+              "title": "Warm-up Exercises",
+              "detail": "Always warm up before practising — a few minutes of light finger exercises protects your hands and gets you focused."
+            },
+            {
+              "title": "The Basic Bossa Groove",
+              "detail": "Thumb = Group 1, Fingers = Group 2. Practise alternating between playing both groups together and splitting them independently."
+            },
+            {
+              "title": "Girl from Ipanema — Three Groove Versions",
+              "detail": "We worked through three different arrangements of the groove, building from simple to more complete."
+            },
+            {
+              "title": "The Bouncing Bass",
+              "detail": "A technique for alternating the bass note between beats, giving the groove its characteristic forward motion."
+            }
+          ],
+          "practice": [
+            "Consolidate Version 3 (original chord shapes) with the bouncing bass — this is the main goal for this week.",
+            "Coming up: a sheet with two versions of Girl from Ipanema — Key of D (original chord shapes, A section) and Key of F (A and B sections)."
+          ]
+        }
+      ]
     }
   },
   "settings": {
@@ -520,5 +558,5 @@
     "sort": "added",
     "showLinks": false
   },
-  "_version": "2026-06-18-1"
+  "_version": "2026-06-23-2"
 }

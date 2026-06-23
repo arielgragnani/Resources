@@ -87,7 +87,30 @@ hr.div{border:none;border-top:1px solid var(--rule);margin:14px 0;}
 .goal-title{font-weight:700;color:var(--ink);}
 .goal-by{font-size:10.5px;color:var(--muted);}
 
-/* ── Category sections ── */
+/* ── Lesson summary ── */
+.lesson-collapsible{border:1.5px solid #FCD34D;border-radius:8px;overflow:hidden;background:#FFFBEB;}
+.lesson-toggle-header{display:flex;align-items:center;gap:8px;padding:12px 14px;cursor:pointer;
+  background:#FFFBEB;border-bottom:1.5px solid transparent;transition:background .15s;}
+.lesson-toggle-header:hover{background:#FEF3C7;}
+.lesson-toggle-header.open{border-bottom-color:#FCD34D;}
+.lesson-toggle-icon{font-size:13px;color:#B45309;transition:transform .2s;}
+.lesson-toggle-header.open .lesson-toggle-icon{transform:rotate(90deg);}
+.lesson-toggle-title{font-size:12px;font-weight:700;color:#B45309;flex:1;}
+.lesson-toggle-date{font-size:10px;color:#B45309;background:rgba(255,255,255,.6);
+  border:1px solid rgba(180,83,9,.25);border-radius:10px;padding:1px 7px;}
+.lesson-collapse-body{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+.lesson-collapse-body.open{max-height:900px;}
+.lesson-body-inner{padding:12px 14px;display:flex;flex-direction:column;gap:10px;}
+.lesson-section-lbl{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:#B45309;margin-bottom:5px;}
+.lesson-topic{display:flex;gap:8px;font-size:12px;padding:3px 0;}
+.lesson-topic-dot{color:#B45309;flex-shrink:0;margin-top:1px;}
+.lesson-topic-body{flex:1;}
+.lesson-topic-title{font-weight:700;color:var(--ink);}
+.lesson-topic-detail{color:var(--muted);margin-top:1px;}
+.lesson-practice{display:flex;flex-direction:column;gap:4px;}
+.lesson-practice-item{display:flex;gap:8px;font-size:12px;color:var(--ink);}
+.lesson-practice-bullet{color:#B45309;flex-shrink:0;}
 .cat-section{margin-bottom:24px;}
 .cat-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
 .cat-pill{font-size:9.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:3px 10px;border-radius:16px;white-space:nowrap;}
@@ -150,11 +173,12 @@ hr.div{border:none;border-top:1px solid var(--rule);margin:14px 0;}
 .logo h1{font-size:13px;font-weight:700;}.logo p{font-size:10px;color:var(--muted);margin-top:1px;}
 .student-tabs{display:flex;flex-direction:column;gap:3px;margin-bottom:4px;}
 .stab-wrap{display:flex;flex-direction:column;gap:2px;}
-.stab{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;
+.stab{display:flex;align-items:center;gap:6px;padding:7px 10px;
   border-radius:6px;border:1px solid var(--rule);background:transparent;cursor:pointer;
   font-family:var(--sans);font-size:12px;font-weight:600;color:var(--steel);transition:all .15s;text-align:left;width:100%;}
 .stab:hover{background:var(--soft);color:var(--ink);}
 .stab.active{background:var(--ink);color:var(--white);border-color:var(--ink);}
+.stab-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .stab-icons{display:flex;align-items:center;gap:5px;flex-shrink:0;}
 .stab-del{font-size:11px;opacity:.5;padding:0 2px;background:none;border:none;cursor:pointer;color:inherit;}
 .stab-link{font-size:11px;opacity:.5;padding:0 2px;background:none;border:none;cursor:pointer;color:inherit;}
@@ -877,14 +901,14 @@ function renderTeacher(){
   const keys=Object.keys(db.students);
   tabs.innerHTML=keys.length
     ? keys.map(k=>`<div class="stab-wrap">
-        <button class="stab ${k===currentStudent?"active":""}" onclick="selectStudent('${k}')">
-          ${esc(db.students[k].name)}
-          <span style="font-size:10px;opacity:.55">(${db.students[k].resources.length})</span>
+        <div class="stab ${k===currentStudent?"active":""}" role="button" tabindex="0"
+          onclick="selectStudent('${k}')" onkeydown="if(event.key==='Enter')selectStudent('${k}')">
+          <span class="stab-name">${esc(db.students[k].name)} <span style="font-size:10px;opacity:.55">(${db.students[k].resources.length})</span></span>
           <span class="stab-icons">
             <button class="stab-link" onclick="event.stopPropagation();copyStudentLink('${k}')" title="Copy student link">📋</button>
             <button class="stab-del" onclick="event.stopPropagation();removeStudent('${k}')" title="Remove">✕</button>
           </span>
-        </button>
+        </div>
       </div>`).join("")
     : `<div style="font-size:11.5px;color:var(--muted);font-style:italic;padding:4px 0">No students yet.</div>`;
 
@@ -905,7 +929,7 @@ function renderTeacher(){
   count.textContent=resources.length+" entr"+(resources.length===1?"y":"ies");
   list.className="cols-"+tCols+" "+(tShowLinks?"links-shown":"links-hidden");
   list.innerHTML=buildHTML(resources,true,null,s.payments||[]);
-  document.getElementById("t-side").innerHTML=buildSideHTML(resources,true,s.payments||[],s.bankDetails,s.goals);
+  document.getElementById("t-side").innerHTML=buildSideHTML(resources,true,s.payments||[],s.bankDetails,s.goals,s.lessons||[]);
 
   /* Bank details fields — reflect this student's saved values */
   const bd=s.bankDetails||{};
@@ -965,7 +989,7 @@ function renderStudentView(key){
   const resources=sortResources(s.resources,svSort);
   list.className="cols-1 "+(svShowLinks?"links-shown":"links-hidden");
   list.innerHTML=buildHTML(resources,false,{key,notes},s.payments||[]);
-  document.getElementById("sv-side").innerHTML=buildSideHTML(resources,false,s.payments||[],s.bankDetails,s.goals);
+  document.getElementById("sv-side").innerHTML=buildSideHTML(resources,false,s.payments||[],s.bankDetails,s.goals,s.lessons||[]);
 }
 
 function svSetSort(m){
@@ -1001,7 +1025,7 @@ function sortResources(resources,mode){
 }
 
 /* Builds the sticky side panel: pinned Zoom + Bank details + collapsible Payments + Goals */
-function buildSideHTML(resources, editable, payments, bankDetails, goals){
+function buildSideHTML(resources, editable, payments, bankDetails, goals, lessons){
   let html = "";
 
   /* Zoom — always pinned */
@@ -1024,6 +1048,46 @@ function buildSideHTML(resources, editable, payments, bankDetails, goals){
     </div>`;
   } else {
     html += `<div class="zoom-banner"><div class="zoom-icon">📹</div><div class="zoom-body"><div class="zoom-lbl">Zoom Lesson Link</div><div style="font-size:12px;color:var(--muted);font-style:italic">No Zoom link yet.</div></div></div>`;
+  }
+
+  /* Lesson summaries — most recent first, collapsible */
+  if(lessons && lessons.length){
+    const sorted = [...lessons].sort((a,b) => b.date.localeCompare(a.date));
+    sorted.forEach((ls, idx) => {
+      const openClass = idx === 0 ? " open" : ""; // newest auto-expanded
+      html += `<div class="lesson-collapsible">
+        <div class="lesson-toggle-header${openClass}" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
+          <span class="lesson-toggle-icon">▸</span>
+          <span class="lesson-toggle-title">📝 Lesson Notes</span>
+          <span class="lesson-toggle-date">${esc(ls.date)}</span>
+        </div>
+        <div class="lesson-collapse-body${openClass}">
+          <div class="lesson-body-inner">`;
+      if(ls.topics && ls.topics.length){
+        html += `<div>
+          <div class="lesson-section-lbl">What we covered</div>`;
+        ls.topics.forEach(t => {
+          html += `<div class="lesson-topic">
+            <span class="lesson-topic-dot">◆</span>
+            <div class="lesson-topic-body">
+              <div class="lesson-topic-title">${esc(t.title)}</div>
+              ${t.detail ? `<div class="lesson-topic-detail">${esc(t.detail)}</div>` : ""}
+            </div>
+          </div>`;
+        });
+        html += `</div>`;
+      }
+      if(ls.practice && ls.practice.length){
+        html += `<div>
+          <div class="lesson-section-lbl">Practice this week</div>
+          <div class="lesson-practice">`;
+        ls.practice.forEach(p => {
+          html += `<div class="lesson-practice-item"><span class="lesson-practice-bullet">→</span><span>${esc(p)}</span></div>`;
+        });
+        html += `</div></div>`;
+      }
+      html += `</div></div></div>`;
+    });
   }
 
   /* Bank details — static reference info for paying by transfer */
@@ -1721,7 +1785,7 @@ function openZoomWindow(url){
 }
 
 /* ── Boot ── */
-const FALLBACK_DATA = {"students": {"robert-mcdonald": {"name": "Robert Macdonald", "resources": [{"id": 1, "cat": "Zoom", "title": "Zoom Lesson", "links": [{"type": "bt", "url": "https://us06web.zoom.us/j/7040558403"}]}, {"id": 2, "cat": "Pieces", "title": "Angelina (Tommy Emmanuel)", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/JVtlc"}]}, {"id": 3, "cat": "Pieces", "title": "Amazing Grace (Tommy Emmanuel)", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/lhvzc"}]}, {"id": 4, "cat": "Pieces", "title": "Georgia on My Mind (Tommy Emmanuel)", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/hYqzc"}]}, {"id": 5, "cat": "Pieces", "title": "Little Wing SRV (Hendrix)", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/rcvwc"}]}, {"id": 6, "cat": "Pieces", "title": "Little Wing (Hendrix)", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/2zVYc"}]}, {"id": 7, "cat": "Pieces", "title": "Have You Ever Loved A Woman (Clapton)", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/J6bHc/"}]}, {"id": 8, "cat": "Pieces", "title": "Layla Acoustic (Clapton)", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/TYhJc/"}]}, {"id": 9, "cat": "Pieces", "title": "Layla Electric (Clapton)", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/SbvJc/"}]}, {"id": 10, "cat": "Pieces", "title": "Danny Boy", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/NZtJc"}]}, {"id": 11, "cat": "Pieces", "title": "Don't Give Up On Me", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/Xwtwc"}]}, {"id": 12, "cat": "Pieces", "title": "Sultans of Swing", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/fhcXc"}]}, {"id": 13, "cat": "Pieces", "title": "Who Knows Where the Time Goes?", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/NvRXc"}]}, {"id": 14, "cat": "Pieces", "title": "The Healing Game", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/FCVYc"}]}, {"id": 15, "cat": "Pieces", "title": "The Healing Game — Solo", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/17Tlc/in-practice-Jxly7"}]}, {"id": 16, "cat": "Pieces", "title": "Guilty (Bonnie Raitt)", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/TZcCc"}]}, {"id": 17, "cat": "Pieces", "title": "Gentle on My Mind (Glen Campbell)", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/1NYqc/"}]}, {"id": 18, "cat": "Pieces", "title": "History in The Making", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/BBp8c/"}]}, {"id": 19, "cat": "Pieces", "title": "Blackbird", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/Mjj8c/"}]}, {"id": 20, "cat": "Pieces", "title": "Til There Was You", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/qTkTc/"}, {"type": "pdf", "url": "https://drive.google.com/file/d/143yBEaAiZQi-uwJTlNEuyUWulolZpdBH/view?usp=drive_link"}]}, {"id": 21, "cat": "Studies", "title": "Coastal Funk", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/KD-Rc"}]}, {"id": 22, "cat": "Studies", "title": "Two For Her — Comping Blues in G", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/mGQCc/"}]}, {"id": 23, "cat": "Studies", "title": "All Blues — Soloing for Jazz Guitar", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/KRQVc/?from=channel"}]}, {"id": 24, "cat": "Studies", "title": "FAT Chords", "links": [{"type": "ss", "url": "https://drive.google.com/file/d/1P3t-YvChHK5tXP6qWjAWMb9Cgj1f9Lnu/view?usp=drive_link"}, {"type": "pdf", "url": "https://drive.google.com/file/d/1bPhNktZ1XPQcvUpk2J6ELz5WJCwwq298/view?usp=drive_link"}]}, {"id": 25, "cat": "Studies", "title": "Neck Diagrams Pentatonic Patterns", "links": [{"type": "pdf", "url": "https://drive.google.com/file/d/1VmvzAfHWOxkRFYBP9zct65XQFq8BWvu7/view?usp=sharing"}]}, {"id": 26, "cat": "Studies", "title": "Major Minor Pentatonic Exercise", "links": [{"type": "pdf", "url": "https://drive.google.com/file/d/18bzw7Tx9N63W1RRDPk4kR5KiEsDCeBJj/view?usp=sharing"}]}, {"id": 27, "cat": "Studies", "title": "Jazz Blues Worksheet Major & Minor Pentatonics", "links": [{"type": "pdf", "url": "https://drive.google.com/file/d/1DBwCRMLRFw3RTf6F7xOm0WkcLHG6wzhY/view?usp=drive_link"}]}, {"id": 28, "cat": "Studies", "title": "Pentatonic Patterns PDF", "links": [{"type": "pdf", "url": "https://drive.google.com/file/d/1xtOiX5X3ZpYVWAAflj-juBhZzRe3DZYm/view?usp=drive_link"}]}, {"id": 29, "cat": "Studies", "title": "Eb Modes", "links": [{"type": "pdf", "url": "https://drive.google.com/file/d/1GEKJ2H8Lq-09noggGbqW404Ln5HahLv2/view?usp=drive_link"}]}, {"id": 30, "cat": "Studies", "title": "Dominant Seventh Shapes", "links": [{"type": "pdf", "url": "https://drive.google.com/file/d/1B334_u7XPVx806DOE2xI_skdWVVBT3QJ/view?usp=drive_link"}]}, {"id": 31, "cat": "Backing Tracks", "title": "Arpeggios over Autumn Leaves", "links": [{"type": "ss", "url": "https://www.soundslice.com/slices/QB8Yc"}]}, {"id": 32, "cat": "Backing Tracks", "title": "Blues in G", "links": [{"type": "bt", "url": "https://drive.google.com/file/d/1MzXU4Aeu0Ch7SSrj1SPCeoAXSokDEOGs/view?usp=drive_link"}]}, {"id": 33, "cat": "Modes of the Major Scale", "title": "Ionian Progression", "links": [{"type": "pdf", "url": "https://drive.google.com/file/d/1vl4t0mto3KBd-Tx6_BwGnQxXJz1Ba0oM/view?usp=drive_link"}]}, {"id": 34, "cat": "Modes of the Major Scale", "title": "Dorian Progression", "links": [{"type": "pdf", "url": "https://drive.google.com/file/d/1HVwdObkv9yaAKwPTJjdY2rX_Somn1GYA/view?usp=drive_link"}]}, {"id": 35, "cat": "Modes of the Major Scale", "title": "Phrygian Progression", "links": [{"type": "pdf", "url": "https://drive.google.com/file/d/1LnGkBp9QtE064bHH7MBXZWiSsyOouQKf/view?usp=drive_link"}]}], "payments": []}, "john-stubbings": {"name": "John Stubbings", "resources": [{"id": 1, "cat": "Zoom", "title": "Zoom Lesson", "links": [{"type": "bt", "url": "https://us06web.zoom.us/j/7040558403"}]}], "payments": []}, "trevor-wales": {"name": "Trevor Wales", "resources": [{"id": 1, "cat": "Zoom", "title": "Zoom Lesson", "links": [{"type": "bt", "url": "https://us06web.zoom.us/j/7040558403"}]}, {"id": 2, "cat": "Pieces", "title": "The Girl From Ipanema (Melody)", "links": [{"type": "pdf", "url": "https://drive.google.com/file/d/1ny0bIhIk2fshSJHISR4zBDZpWWoq-w_c/view?usp=drive_link"}]}, {"id": 3, "cat": "Pieces", "title": "The Girl From Ipanema (Chords)", "links": [{"type": "pdf", "url": "https://drive.google.com/file/d/1FCIjHwuGe_s9y-N4ebFTcJ5sdDGfSgvE/view?usp=sharing"}]}], "payments": [{"amount": "55", "paidDate": "11 May 2026", "status": "completed", "detail": "Lesson 1 — 60 min, taken 11 May, completed"}, {"amount": "55 (covers 2 x lessons)", "paidDate": "11 June 2026", "status": "completed", "detail": "Lesson 2 — taken 12 June, completed"}, {"amount": "55 (covers 2 x lessons)", "paidDate": "11 June 2026", "status": "completed", "detail": "Lesson 3 — taken 16 June, completed"}], "goals": [{"title": "Wave", "by": "Tom Jobim"}]}, "david-morris": {"name": "David Morris", "resources": [{"id": 1, "cat": "Zoom", "title": "Zoom Lesson", "links": [{"type": "bt", "url": "https://us06web.zoom.us/j/7040558403"}]}, {"id": 2, "cat": "Pieces", "title": "The Girl From Ipanema (Simplified)", "links": [{"type": "pdf", "url": "https://drive.google.com/file/d/1-NKBRsq7uitEXaIbmGdyEkwqLxj2ONCv/view?usp=sharing"}]}], "payments": [], "bankDetails": {"accountHolder": "INSTITUTO DE MUSICA ALTERNATIVA LTDA", "accountNumber": "28038103", "sortCode": "23-08-01", "bankName": "Wise Payments Limited"}}}, "settings": {"cols": 1, "sort": "added", "showLinks": false}, "_version": "2026-06-18-1"};
+const FALLBACK_DATA = {"students":{"robert-mcdonald":{"name":"Robert Macdonald","resources":[{"id":1,"cat":"Zoom","title":"Zoom Lesson","links":[{"type":"bt","url":"https://us06web.zoom.us/j/7040558403"}]},{"id":2,"cat":"Pieces","title":"Angelina (Tommy Emmanuel)","links":[{"type":"ss","url":"https://www.soundslice.com/slices/JVtlc"}]},{"id":3,"cat":"Pieces","title":"Amazing Grace (Tommy Emmanuel)","links":[{"type":"ss","url":"https://www.soundslice.com/slices/lhvzc"}]},{"id":4,"cat":"Pieces","title":"Georgia on My Mind (Tommy Emmanuel)","links":[{"type":"ss","url":"https://www.soundslice.com/slices/hYqzc"}]},{"id":5,"cat":"Pieces","title":"Little Wing SRV (Hendrix)","links":[{"type":"ss","url":"https://www.soundslice.com/slices/rcvwc"}]},{"id":6,"cat":"Pieces","title":"Little Wing (Hendrix)","links":[{"type":"ss","url":"https://www.soundslice.com/slices/2zVYc"}]},{"id":7,"cat":"Pieces","title":"Have You Ever Loved A Woman (Clapton)","links":[{"type":"ss","url":"https://www.soundslice.com/slices/J6bHc/"}]},{"id":8,"cat":"Pieces","title":"Layla Acoustic (Clapton)","links":[{"type":"ss","url":"https://www.soundslice.com/slices/TYhJc/"}]},{"id":9,"cat":"Pieces","title":"Layla Electric (Clapton)","links":[{"type":"ss","url":"https://www.soundslice.com/slices/SbvJc/"}]},{"id":10,"cat":"Pieces","title":"Danny Boy","links":[{"type":"ss","url":"https://www.soundslice.com/slices/NZtJc"}]},{"id":11,"cat":"Pieces","title":"Don't Give Up On Me","links":[{"type":"ss","url":"https://www.soundslice.com/slices/Xwtwc"}]},{"id":12,"cat":"Pieces","title":"Sultans of Swing","links":[{"type":"ss","url":"https://www.soundslice.com/slices/fhcXc"}]},{"id":13,"cat":"Pieces","title":"Who Knows Where the Time Goes?","links":[{"type":"ss","url":"https://www.soundslice.com/slices/NvRXc"}]},{"id":14,"cat":"Pieces","title":"The Healing Game","links":[{"type":"ss","url":"https://www.soundslice.com/slices/FCVYc"}]},{"id":15,"cat":"Pieces","title":"The Healing Game — Solo","links":[{"type":"ss","url":"https://www.soundslice.com/slices/17Tlc/in-practice-Jxly7"}]},{"id":16,"cat":"Pieces","title":"Guilty (Bonnie Raitt)","links":[{"type":"ss","url":"https://www.soundslice.com/slices/TZcCc"}]},{"id":17,"cat":"Pieces","title":"Gentle on My Mind (Glen Campbell)","links":[{"type":"ss","url":"https://www.soundslice.com/slices/1NYqc/"}]},{"id":18,"cat":"Pieces","title":"History in The Making","links":[{"type":"ss","url":"https://www.soundslice.com/slices/BBp8c/"}]},{"id":19,"cat":"Pieces","title":"Blackbird","links":[{"type":"ss","url":"https://www.soundslice.com/slices/Mjj8c/"}]},{"id":20,"cat":"Pieces","title":"Til There Was You","links":[{"type":"ss","url":"https://www.soundslice.com/slices/qTkTc/"},{"type":"pdf","url":"https://drive.google.com/file/d/143yBEaAiZQi-uwJTlNEuyUWulolZpdBH/view?usp=drive_link"}]},{"id":21,"cat":"Studies","title":"Coastal Funk","links":[{"type":"ss","url":"https://www.soundslice.com/slices/KD-Rc"}]},{"id":22,"cat":"Studies","title":"Two For Her — Comping Blues in G","links":[{"type":"ss","url":"https://www.soundslice.com/slices/mGQCc/"}]},{"id":23,"cat":"Studies","title":"All Blues — Soloing for Jazz Guitar","links":[{"type":"ss","url":"https://www.soundslice.com/slices/KRQVc/?from=channel"}]},{"id":24,"cat":"Studies","title":"FAT Chords","links":[{"type":"ss","url":"https://drive.google.com/file/d/1P3t-YvChHK5tXP6qWjAWMb9Cgj1f9Lnu/view?usp=drive_link"},{"type":"pdf","url":"https://drive.google.com/file/d/1bPhNktZ1XPQcvUpk2J6ELz5WJCwwq298/view?usp=drive_link"}]},{"id":25,"cat":"Studies","title":"Neck Diagrams Pentatonic Patterns","links":[{"type":"pdf","url":"https://drive.google.com/file/d/1VmvzAfHWOxkRFYBP9zct65XQFq8BWvu7/view?usp=sharing"}]},{"id":26,"cat":"Studies","title":"Major Minor Pentatonic Exercise","links":[{"type":"pdf","url":"https://drive.google.com/file/d/18bzw7Tx9N63W1RRDPk4kR5KiEsDCeBJj/view?usp=sharing"}]},{"id":27,"cat":"Studies","title":"Jazz Blues Worksheet Major & Minor Pentatonics","links":[{"type":"pdf","url":"https://drive.google.com/file/d/1DBwCRMLRFw3RTf6F7xOm0WkcLHG6wzhY/view?usp=drive_link"}]},{"id":28,"cat":"Studies","title":"Pentatonic Patterns PDF","links":[{"type":"pdf","url":"https://drive.google.com/file/d/1xtOiX5X3ZpYVWAAflj-juBhZzRe3DZYm/view?usp=drive_link"}]},{"id":29,"cat":"Studies","title":"Eb Modes","links":[{"type":"pdf","url":"https://drive.google.com/file/d/1GEKJ2H8Lq-09noggGbqW404Ln5HahLv2/view?usp=drive_link"}]},{"id":30,"cat":"Studies","title":"Dominant Seventh Shapes","links":[{"type":"pdf","url":"https://drive.google.com/file/d/1B334_u7XPVx806DOE2xI_skdWVVBT3QJ/view?usp=drive_link"}]},{"id":31,"cat":"Backing Tracks","title":"Arpeggios over Autumn Leaves","links":[{"type":"ss","url":"https://www.soundslice.com/slices/QB8Yc"}]},{"id":32,"cat":"Backing Tracks","title":"Blues in G","links":[{"type":"bt","url":"https://drive.google.com/file/d/1MzXU4Aeu0Ch7SSrj1SPCeoAXSokDEOGs/view?usp=drive_link"}]},{"id":33,"cat":"Modes of the Major Scale","title":"Ionian Progression","links":[{"type":"pdf","url":"https://drive.google.com/file/d/1vl4t0mto3KBd-Tx6_BwGnQxXJz1Ba0oM/view?usp=drive_link"}]},{"id":34,"cat":"Modes of the Major Scale","title":"Dorian Progression","links":[{"type":"pdf","url":"https://drive.google.com/file/d/1HVwdObkv9yaAKwPTJjdY2rX_Somn1GYA/view?usp=drive_link"}]},{"id":35,"cat":"Modes of the Major Scale","title":"Phrygian Progression","links":[{"type":"pdf","url":"https://drive.google.com/file/d/1LnGkBp9QtE064bHH7MBXZWiSsyOouQKf/view?usp=drive_link"}]}],"payments":[]},"john-stubbings":{"name":"John Stubbings","resources":[{"id":1,"cat":"Zoom","title":"Zoom Lesson","links":[{"type":"bt","url":"https://us06web.zoom.us/j/7040558403"}]}],"payments":[]},"trevor-wales":{"name":"Trevor Wales","resources":[{"id":1,"cat":"Zoom","title":"Zoom Lesson","links":[{"type":"bt","url":"https://us06web.zoom.us/j/7040558403"}]},{"id":2,"cat":"Pieces","title":"The Girl From Ipanema (Melody)","links":[{"type":"pdf","url":"https://drive.google.com/file/d/1ny0bIhIk2fshSJHISR4zBDZpWWoq-w_c/view?usp=drive_link"}]},{"id":3,"cat":"Pieces","title":"The Girl From Ipanema (Chords)","links":[{"type":"pdf","url":"https://drive.google.com/file/d/1FCIjHwuGe_s9y-N4ebFTcJ5sdDGfSgvE/view?usp=sharing"}]}],"payments":[{"amount":"55","paidDate":"11 May 2026","status":"completed","detail":"Lesson 1 — 60 min, taken 11 May, completed"},{"amount":"55 (covers 2 x lessons)","paidDate":"11 June 2026","status":"completed","detail":"Lesson 2 — taken 12 June, completed"},{"amount":"55 (covers 2 x lessons)","paidDate":"11 June 2026","status":"completed","detail":"Lesson 3 — taken 16 June, completed"}],"goals":[{"title":"Wave","by":"Tom Jobim"}]},"david-morris":{"name":"David Morris","resources":[{"id":1,"cat":"Zoom","title":"Zoom Lesson","links":[{"type":"bt","url":"https://us06web.zoom.us/j/7040558403"}]},{"id":2,"cat":"Pieces","title":"The Girl From Ipanema (Simplified)","links":[{"type":"pdf","url":"https://drive.google.com/file/d/1-NKBRsq7uitEXaIbmGdyEkwqLxj2ONCv/view?usp=sharing"}]},{"id":3,"cat":"Backing Tracks","title":"Bossa Nova Drum Groove","links":[{"type":"bt","url":"https://drive.google.com/file/d/17CrVSYhmQWZJlaWVNQYsxHDsqIe3o9WC/view?usp=sharing"}]}],"payments":[],"bankDetails":{"accountHolder":"INSTITUTO DE MUSICA ALTERNATIVA LTDA","accountNumber":"28038103","sortCode":"23-08-01","bankName":"Wise Payments Limited"},"lessons":[{"date":"23 June 2026","topics":[{"title":"Warm-up Exercises","detail":"Always warm up before practising — a few minutes of light finger exercises protects your hands and gets you focused."},{"title":"The Basic Bossa Groove","detail":"Thumb = Group 1, Fingers = Group 2. Practise alternating between playing both groups together and splitting them independently."},{"title":"Girl from Ipanema — Three Groove Versions","detail":"We worked through three different arrangements of the groove, building from simple to more complete."},{"title":"The Bouncing Bass","detail":"A technique for alternating the bass note between beats, giving the groove its characteristic forward motion."}],"practice":["Consolidate Version 3 (original chord shapes) with the bouncing bass — this is the main goal for this week.","Coming up: a sheet with two versions of Girl from Ipanema — Key of D (original chord shapes, A section) and Key of F (A and B sections)."]}]}},"settings":{"cols":1,"sort":"added","showLinks":false},"_version":"2026-06-23-2"};
 const CONTENT_VERSION_KEY = "gl_content_version";
 
 (async function(){
