@@ -501,6 +501,28 @@ body:not(:has(.view.active)) #tools-fab{display:none;}
   .sv-toolbar{flex-wrap:wrap;}
   .tog-sep{display:none;}
 }
+
+/* ── Teacher password overlay ── */
+#pw-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);
+  backdrop-filter:blur(4px);z-index:9000;align-items:center;justify-content:center;}
+#pw-overlay.visible{display:flex;}
+#pw-box{background:var(--white);border-radius:14px;padding:36px 32px;width:100%;max-width:340px;
+  box-shadow:0 24px 60px rgba(0,0,0,.25);display:flex;flex-direction:column;align-items:center;gap:10px;}
+#pw-icon{font-size:36px;line-height:1;}
+#pw-title{font-size:18px;font-weight:800;color:var(--ink);letter-spacing:-.02em;}
+#pw-sub{font-size:12.5px;color:var(--muted);margin-bottom:4px;}
+#pw-input{width:100%;padding:10px 14px;border:1.5px solid var(--rule);border-radius:8px;
+  font-size:15px;font-family:var(--sans);outline:none;text-align:center;letter-spacing:.12em;
+  box-sizing:border-box;transition:border-color .15s;}
+#pw-input:focus{border-color:var(--ink);}
+#pw-input.shake{animation:pwshake .35s ease;}
+#pw-error{font-size:11.5px;color:#DC2626;min-height:16px;}
+#pw-btn{margin-top:4px;width:100%;padding:10px;background:var(--ink);color:var(--white);
+  border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;
+  font-family:var(--sans);transition:opacity .15s;}
+#pw-btn:hover{opacity:.85;}
+@keyframes pwshake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}
+  40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
 </style>
 </head>
 <body>
@@ -530,6 +552,19 @@ body:not(:has(.view.active)) #tools-fab{display:none;}
       <button class="btn btn-save" onclick="saveEdit()">✓ Save changes</button>
       <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
     </div>
+  </div>
+</div>
+
+<!-- ══ TEACHER PASSWORD OVERLAY ══ -->
+<div id="pw-overlay">
+  <div id="pw-box">
+    <div id="pw-icon">🎸</div>
+    <div id="pw-title">Teacher Dashboard</div>
+    <div id="pw-sub">Enter password to continue</div>
+    <input id="pw-input" type="password" placeholder="Password" autocomplete="current-password"
+      onkeydown="if(event.key==='Enter')checkTeacherPassword()">
+    <div id="pw-error"></div>
+    <button id="pw-btn" onclick="checkTeacherPassword()">Unlock</button>
   </div>
 </div>
 
@@ -796,6 +831,37 @@ const TYPE_CLASS={ss:"badge-ss",pdf:"badge-pdf",bt:"badge-bt"};
 const TYPE_ICON ={ss:"🟠",pdf:"🟣",bt:"🟢"};
 const STORAGE_KEY="gl_data_v2";
 const NOTES_KEY="gl_notes_v1"; // student notes stored separately per browser
+const TEACHER_PASSWORD="fender";
+const TEACHER_SESSION_KEY="gl_teacher_unlocked";
+
+function isTeacherUnlocked(){
+  return sessionStorage.getItem(TEACHER_SESSION_KEY)==="1";
+}
+
+function showPasswordOverlay(){
+  const overlay=document.getElementById("pw-overlay");
+  overlay.classList.add("visible");
+  setTimeout(()=>document.getElementById("pw-input").focus(),60);
+}
+
+function checkTeacherPassword(){
+  const val=document.getElementById("pw-input").value;
+  if(val===TEACHER_PASSWORD){
+    sessionStorage.setItem(TEACHER_SESSION_KEY,"1");
+    document.getElementById("pw-overlay").classList.remove("visible");
+    document.getElementById("pw-input").value="";
+    document.getElementById("pw-error").textContent="";
+    route();
+  } else {
+    const inp=document.getElementById("pw-input");
+    document.getElementById("pw-error").textContent="Incorrect password — try again.";
+    inp.value="";
+    inp.classList.remove("shake");
+    void inp.offsetWidth; // force reflow to restart animation
+    inp.classList.add("shake");
+    inp.focus();
+  }
+}
 
 let db={students:{},settings:{cols:1,sort:"added",showLinks:false}};
 let currentStudent=null;
@@ -854,6 +920,10 @@ function route(){
   if(!hash){
     document.getElementById("landing").classList.add("active");
   } else if(hash==="teacher"){
+    if(!isTeacherUnlocked()){
+      showPasswordOverlay();
+      return;
+    }
     document.getElementById("teacher-view").classList.add("active");
     if(!currentStudent&&Object.keys(db.students).length){
       currentStudent=Object.keys(db.students)[0];
