@@ -497,11 +497,11 @@
         {
           "id": 2,
           "cat": "Pieces",
-          "title": "The Girl From Ipanema (Simplified)",
+          "title": "The Girl From Ipanema Exercise",
           "links": [
             {
               "type": "pdf",
-              "url": "https://drive.google.com/file/d/1-NKBRsq7uitEXaIbmGdyEkwqLxj2ONCv/view?usp=sharing"
+              "url": "https://drive.google.com/file/d/1OutO_HvjlxM94l8vN8x2w7snJYmq0Tyz/view?usp=drive_link"
             }
           ]
         },
@@ -530,24 +530,16 @@
           "topics": [
             {
               "title": "Warm-up Exercises",
-              "detail": "Always warm up before practising — a few minutes of light finger exercises protects your hands and gets you focused."
+              "detail": "A few minutes of light stretches before you play — count one to ten slowly on each finger."
             },
             {
-              "title": "The Basic Bossa Groove",
-              "detail": "Thumb = Group 1, Fingers = Group 2. Practise alternating between playing both groups together and splitting them independently."
-            },
-            {
-              "title": "Girl from Ipanema — Three Groove Versions",
-              "detail": "We worked through three different arrangements of the groove, building from simple to more complete."
-            },
-            {
-              "title": "The Bouncing Bass",
-              "detail": "A technique for alternating the bass note between beats, giving the groove its characteristic forward motion."
+              "title": "Basic Bossa Groove & Bouncing Bass",
+              "detail": "We covered the basic bossa groove (thumb vs fingers), and the bouncing bass technique: moving the bass note away from the root to a different chord tone — a fifth or a third."
             }
           ],
           "practice": [
-            "Consolidate Version 3 (original chord shapes) with the bouncing bass — this is the main goal for this week.",
-            "Coming up: a sheet with two versions of Girl from Ipanema — Key of D (original chord shapes, A section) and Key of F (A and B sections)."
+            "Play both versions of Girl from Ipanema using the chord progressions shown below the chords in each square on your sheet — the blue square (Key of D) and the orange square (Key of F).",
+            "Practise those same progressions along with the Bossa Nova Drum Groove backing track in your resources — this will help lock in the groove."
           ]
         }
       ]
@@ -558,5 +550,5 @@
     "sort": "added",
     "showLinks": false
   },
-  "_version": "2026-06-23-2"
+  "_version": "2026-06-23-3"
 }
