@@ -526,6 +526,17 @@
               "url": "https://drive.google.com/file/d/17CrVSYhmQWZJlaWVNQYsxHDsqIe3o9WC/view?usp=sharing"
             }
           ]
+        },
+        {
+          "id": 1782476212314,
+          "title": "Bossa Nova Pattern 1 (TAB)",
+          "cat": "Pieces",
+          "links": [
+            {
+              "type": "pdf",
+              "url": "https://drive.google.com/file/d/1hUyq7cjxcwdnqyDv99uQO-cfMc6fYiUQ/view?usp=sharing"
+            }
+          ]
         }
       ],
       "payments": [],
@@ -561,5 +572,5 @@
     "sort": "added",
     "showLinks": false
   },
-  "_version": "2026-06-26T11:59:39.322Z"
+  "_version": "2026-06-26T12:17:05.681Z"
 }
