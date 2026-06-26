@@ -395,6 +395,17 @@
               "url": "https://drive.google.com/file/d/1LnGkBp9QtE064bHH7MBXZWiSsyOouQKf/view?usp=drive_link"
             }
           ]
+        },
+        {
+          "id": 1782475147934,
+          "title": "Lydian Progression",
+          "cat": "Modes of the Major Scale",
+          "links": [
+            {
+              "type": "pdf",
+              "url": "https://drive.google.com/file/d/1UDi2lTaRVPdPPd22tVKoFFec7htJS41B/view?usp=sharing"
+            }
+          ]
         }
       ],
       "payments": []
@@ -550,5 +561,5 @@
     "sort": "added",
     "showLinks": false
   },
-  "_version": "2026-06-23-3"
+  "_version": "2026-06-26T11:59:39.322Z"
 }
