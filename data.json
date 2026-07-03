@@ -370,7 +370,7 @@
           "links": [
             {
               "type": "pdf",
-              "url": "https://drive.google.com/file/d/1vl4t0mto3KBd-Tx6_BwGnQxXJz1Ba0oM/view?usp=drive_link"
+              "url": "https://drive.google.com/file/d/1OAeQEE8eyfuuPTnrOBSOp5A4nv08XO9s/view?usp=sharing"
             }
           ]
         },
@@ -381,7 +381,7 @@
           "links": [
             {
               "type": "pdf",
-              "url": "https://drive.google.com/file/d/1HVwdObkv9yaAKwPTJjdY2rX_Somn1GYA/view?usp=drive_link"
+              "url": "https://drive.google.com/file/d/1O37Rt4ZsxD-tdQ-Ryu-nrW2GqdRM_Gvc/view?usp=sharing"
             }
           ]
         },
@@ -392,7 +392,7 @@
           "links": [
             {
               "type": "pdf",
-              "url": "https://drive.google.com/file/d/1LnGkBp9QtE064bHH7MBXZWiSsyOouQKf/view?usp=drive_link"
+              "url": "https://drive.google.com/file/d/1ZHzIjwXceqKXfgqFI-6TPmtlADQTeKMT/view?usp=sharing"
             }
           ]
         },
@@ -404,6 +404,17 @@
             {
               "type": "pdf",
               "url": "https://drive.google.com/file/d/1UDi2lTaRVPdPPd22tVKoFFec7htJS41B/view?usp=sharing"
+            }
+          ]
+        },
+        {
+          "id": 1783095390626,
+          "title": "Mixolydian Progression",
+          "cat": "Modes of the Major Scale",
+          "links": [
+            {
+              "type": "pdf",
+              "url": "https://drive.google.com/file/d/1oXRXGcytv0s4gUcnf0_AnRRFVi-BMBhH/view?usp=sharing"
             }
           ]
         }
@@ -572,5 +583,5 @@
     "sort": "added",
     "showLinks": false
   },
-  "_version": "2026-06-26T12:17:05.681Z"
+  "_version": "2026-07-03T16:16:48.859Z"
 }
